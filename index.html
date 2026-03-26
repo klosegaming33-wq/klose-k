@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Kamu 🤍</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-soft: #fce4ec;
+            --lavender: #f3e5f5;
+            --cream: #fff9f0;
+            --text-color: #5d4037;
+            --accent: #d81b60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--cream);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* --- Global Styles --- */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1, .handwriting {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background-color: white;
+            border: 1px solid var(--pink-soft);
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            text-decoration: none;
+            color: var(--text-color);
+            border-style: solid; /* Menjaga konsistensi border */
+        }
+
+        .btn:hover {
+            background-color: var(--pink-soft);
+            transform: scale(1.05);
+        }
+
+        /* --- 1. Opening Section --- */
+        #opening {
+            background: linear-gradient(to bottom, #fff, var(--pink-soft));
+            opacity: 1;
+            transform: none;
+            position: relative; /* Perbaikan untuk floating hearts */
+        }
+
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0; /* Di atas background, di bawah konten */
+            top: 0;
+            left: 0;
+        }
+        
+        #opening h1, #opening button {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- 2. Apology Section (Revisi) --- */
+        #apology { background-color: white; }
+        
+        /* Style baru untuk sub-galeri foto */
+        .apology-fotos {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            max-width: 900px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap; /* Agar rapi di HP */
+        }
+        
+        .apology-fotos img {
+            width: 100%;
+            max-width: 250px; /* Ukuran foto */
+            height: 350px;
+            object-fit: cover; /* Foto tidak gepeng */
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 5px solid white; /* Efek polaroid soft */
+        }
+
+        .apology-text {
+            max-width: 600px;
+            line-height: 1.8;
+            font-size: 1.2rem;
+        }
+
+        /* --- 3. Gallery Section --- */
+        #gallery { background-color: var(--lavender); }
+        .slideshow {
+            width: 90%;
+            max-width: 530px;
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .slideshow img {
+            width: 90%;
+            display: none;
+            height: 530px;
+            object-fit: cover;
+        }
+        .slideshow img.active { display: block; }
+        .caption { margin-top: 15px; font-style: italic; }
+
+        /* --- 4. Reasons Section --- */
+        #reasons { background-color: #fff; }
+        .reason-list {
+            list-style: none;
+            text-align: left;
+            max-width: 300px;
+        }
+        .reason-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--pink-soft);
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: 0.5s;
+        }
+        .reason-item.show { opacity: 1; transform: translateX(0); }
+
+        /* --- 5. Love Letter Section --- */
+        #letter { background-color: var(--cream); }
+        .letter-box {
+            background: white;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            max-width: 600px;
+            line-height: 2;
+        }
+
+        /* --- 6. Ending Section --- */
+        .ending-btns { display: flex; gap: 20px; margin-top: 30px; position: relative; min-height: 50px; width: 100%; justify-content: center; }
+        #success-msg { display: none; margin-top: 20px; color: var(--accent); }
+
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        /* Responsive Fix untuk foto di HP */
+        @media (max-width: 600px) {
+            .apology-fotos img {
+                max-width: 45%; /* 2 foto per baris di HP */
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="audio-player">
+        <audio id="bgMusic" loop>
+            <source src="Feby.mp3" type="audio/mpeg">
+        </audio>
+        <button class="btn" onclick="toggleMusic()">🎵 Play/Pause</button>
+    </div>
+
+    <section id="opening">
+        <div class="floating-hearts" id="heartContainer"></div>
+        <h1>Abangg mau beritau kamu sesuatu untuk kamu…</h1>
+        <button class="btn" onclick="startJourney()">Klik kalau kamu masih sayang abangg 🤍</button>
+    </section>
+
+    <section id="apology">
+        <h2 class="handwriting">Maafin abangg ya?</h2>
+        
+        <div class="apology-fotos">
+           <img src="Sii cantikk kesayangann abangg - Copy.jpeg" alt="Foto Kamu 1">
+            <img src="lucuuu.jpeg" alt="Foto Kamu 2">
+            <img src="siii cantiknyaa abanggg.jpeg" alt="Foto Kamu 3">
+        </div>
+
+        <div class="apology-text">
+            <p>Abangg tau kata maaf aja gak cukup buat hapus rasa kecewa di hati kamu. Abangg sadar sikapp abangg sudah menyakiti kamu, dan itu adalah terakhir yang ingin abangg lakuin di dunia ini. Kamu adalah bagian terindah dalam hidup abangg, dan entah gimana abangg kalau kamu pergi. Abangg berjanji akan belajar menjadi lebih baik lagi untuk kamu, untuk kita.</p>
+        </div>
+    </section>
+
+    <section id="gallery">
+        <h2 class="handwriting">Pas kita lagi ademnyaa</h2>
+        <div class="slideshow">
+            <img src="Foto kita berdua di gereja.jpeg" class="active">
+            <img src="Foto kita  pas jalan jalan.jpeg">
+            <img src="Foto kamu di tempat kerja abangg.jpeg">
+        </div>
+        <p class="caption" id="captionText">Setiap abangg di samping kamuu adalah favorit abangg.</p>
+    </section>
+
+    <section id="reasons">
+        <h2 class="handwriting">Ada banyak kenapa abangg Sayang Kamu Abangg sebutkan beberapa</h2>
+        <ul class="reason-list" id="reasonList">
+            <li class="reason-item">1. Sabar kamu yang luar biasa menghadapi sifatt abangg.</li>
+            <li class="reason-item">2. Cara kamu buat abangg yang selalu menenangkan.</li>
+            <li class="reason-item">3. Dukungan kamu yang gakk pernah putus buat abangg.</li>
+            <li class="reason-item">4. Kamu adalah rumah tempat abangg pulangg,rumah ternyaman buat abangg.</li>
+            <li class="reason-item">5. Cara kamu memandang dunia dengan tulus.</li>
+            <li class="reason-item">6. Kamu selalu tau cara buat abangg merasa berharga.</li>
+            <li class="reason-item">7. abangg nyaman sama kamu,gak ada di orangg yangg pernah abangg temuin.</li>
+            <li class="reason-item">8. Kehadiran kamu melengkapi abangg.</li>
+            <li class="reason-item">9. Semangatt sama ketangguhan kamu yang selalu menular sama abangg.</li>
+            <li class="reason-item">10.Karena kamu adalah kamu, gak perlu menjadi orang lain.</li>
+        </ul>
+    </section>
+
+    <section id="letter">
+        <div class="letter-box">
+            <h2 class="handwriting">Surat buat kamu</h2>
+            <p>Sayangg, di dunia yang ini, kamu itu orang yang paling abangg sayangg, abangg tenang kalau sama kamu abangg gak mau kamu pergi lagi. Abangg minta maaff kalau selama sama abangg sedikit bosan abangg teruss usahakan yang terbaik buat kamu. maafin abangg cuma bisa buat kamu muyak sama marah sama abangg maafin abangg juga masih belum bisa ngertiin kamu tapi abangg terus perbaiki teruss.abangg harap kamu terus bertahan sama abangg, abangg mohon jangan ada orang ke 3 yaa kalau bosan ngomong sama abangg apa apa ngomongg gapapaa abangg gak marah kok. abangg sayangg kamu, abangg mau kamu bahagiaa teruss. makasihh yaa sudahh bertahan samaa abangg walaupun abangg banyakk kurangnyaa.</p>
+        </div>
+    </section>
+
+    <section id="ending">
+        <h1>Kamu mau maafin abangg?</h1>
+        <div class="ending-btns">
+            <button class="btn" onclick="acceptApology()">❤️ Iyaa</button>
+            <button class="btn" onmouseover="moveBtn(this)" style="transition: all 0.2s ease;">😤 gak tau</button>
+        </div>
+        <div id="success-msg">
+            <h2 class="handwriting">Makasih yaa sudah tetap pilih dan bertahan sama abangg.</h2>
+            <p>Abangg sayangg kamuu selamanyaa. 🤍</p>
+        </div>
+    </section>
+
+    <script>
+        // 1. Start Journey & Music
+        function startJourney() {
+            // Cek apakah audio bisa diputar (kebijakan browser)
+            const music = document.getElementById('bgMusic');
+            music.play().catch(error => {
+                console.log("Autoplay musik diblokir browser, perlu interaksi user.", error);
+            });
+            window.scrollTo(0, window.innerHeight);
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            if (music.paused) {
+                music.play();
+            } else {
+                music.pause();
+            }
+        }
+
+        // 2. Scroll Animation (Fade In)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Trigger reasons animation if in view
+                    if(entry.target.id === 'reasons') {
+                        animateReasons();
+                    }
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+        // 3. Slideshow Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slideshow img');
+        const captions = [
+            "Setiap abangg sama kamu abangg ngerasa tenang.",
+            "Tempat nyaman abangg pulang.",
+            "makasiih yaa sudah melengkapi hari hari abangg."
+        ];
+
+        if(slides.length > 0) {
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+                const captionElem = document.getElementById('captionText');
+                if(captionElem) captionElem.innerText = captions[currentSlide];
+            }, 3000);
+        }
+
+        // 4. Animate Reasons List
+        let reasonsAnimated = false; // Mencegah animasi ulang
+        function animateReasons() {
+            if (reasonsAnimated) return;
+            reasonsAnimated = true;
+            const items = document.querySelectorAll('.reason-item');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('show');
+                }, index * 400);
+            });
+        }
+
+        // 5. Ending Logic
+        function acceptApology() {
+            document.querySelector('.ending-btns').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
+            confettiEffect();
+        }
+
+        function moveBtn(btn) {
+            // Button "gak tau" akan lari saat didekati (lucu-lucuan)
+            const parent = btn.parentElement;
+            const parentRect = parent.getBoundingClientRect();
+            
+            // Area lari dibatasi di sekitar tombol asli agar tidak keluar layar
+            const x = Math.random() * 200 - 100; // -100px ke +100px
+            const y = Math.random() * 100 - 50;  // -50px ke +50px
+            
+            btn.style.position = 'absolute';
+            btn.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        function confettiEffect() {
+            // Animasi sederhana hati muncul
+            for(let i=0; i<20; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.style.position = 'fixed';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = '100vh';
+                heart.style.fontSize = '2rem';
+                heart.style.zIndex = '999';
+                heart.style.transition = 'all 3s ease-out';
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.style.top = '-10vh';
+                    heart.style.opacity = '0';
+                }, 100);
+                
+                // Hapus elemen setelah animasi selesai
+                setTimeout(() => {
+                    heart.remove();
+                }, 3100);
+            }
+        }
+    </script>
+</body>
+</html>
